@@ -1,0 +1,42 @@
+/* Sidebar.css */
+.sidebar {
+  height: 100vh; /* 화면 전체 높이 */
+  width: 450px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: #111;
+  padding-top: 20px;
+  /* z-index: 10; */
+}
+
+.sidebar h2 {
+  color: white;
+  text-align: center;
+}
+
+.sidebar ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.sidebar ul li {
+  padding: 10px;
+  text-align: center;
+}
+
+.sidebar ul li a {
+  color: white;
+  text-decoration: none;
+  display: block;
+}
+
+.sidebar ul li a:hover {
+  background-color: #575757;
+}
+
+.calendar-wrapper {
+  position: relative;
+  /* z-index: 1; */
+  overflow-x: hidden;
+}

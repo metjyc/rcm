@@ -1,0 +1,98 @@
+/* 📦 캘린더 전체 컨테이너 */
+.calendar-container {
+  padding: 0;
+  margin: 0;
+  max-height: calc(100vh - 50px);
+  overflow-x: auto; /* 가로 스크롤 허용 */
+  overflow-y: auto; /* 세로 스크롤 허용 */
+}
+
+/* 오늘 날짜 텍스트 */
+.current-date {
+  font-size: 18px;
+  margin-bottom: 16px;
+  font-weight: bold;
+}
+
+/* 테이블 그리드 */
+.calendar-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+
+.calendar-table th,
+.calendar-table td {
+  border: 1px solid #d9d9d9;
+  padding: 0;
+  height: 32px;
+  position: relative;
+  overflow: visible; /* Bar가 셀 밖으로 살짝 나올 수 있게 */
+}
+
+/* 헤더 셀 배경 */
+.calendar-table th {
+  background: #fafafa;
+}
+
+/* 오늘 헤더 강조 */
+.today-header {
+  background: #e6f7ff;
+  color: #1890ff;
+  font-weight: bold;
+  border-bottom: 2px solid #1890ff;
+}
+
+/* 오늘 셀 강조 */
+.today-border {
+  border-left: 2px solid #1890ff !important;
+  border-right: 2px solid #1890ff !important;
+  background: transparent;
+  z-index: 1;
+}
+
+/* 요일 텍스트 */
+.calendar-weekday {
+  font-size: 11px;
+  color: #888;
+  text-align: center;
+  line-height: 1.2;
+  margin: 2px 0;
+}
+
+/* 날짜 텍스트 (MM/DD 아래) */
+.calendar-table th > div + div {
+  font-size: 12px;
+  text-align: center;
+}
+
+/* 셀 커서 (더블클릭 가능) */
+.calendar-cell {
+  cursor: pointer;
+}
+
+/* ✅ 예약 바—좌우 넘치게, 위/아래는 셀 높이에 딱 맞추기 */
+.bar {
+  position: absolute;
+  top: 0; /* 셀 안에서 위로 튀어나오지 않음 */
+  bottom: 0; /* 셀 안에서 아래로 튀어나오지 않음 */
+  background-color: #4caf50;
+  border-radius: 4px;
+  box-sizing: border-box;
+  padding: 0 4px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  overflow: hidden; /* 막대 내부 넘침 숨김 */
+  text-overflow: ellipsis;
+  z-index: 2; /* 테이블 셀 경계선 위에 표시 */
+  cursor: pointer;
+}
+
+/* 예약자 이름 스타일 */
+.bar .name {
+  color: #fff;
+  font-weight: 500;
+  user-select: none;
+}

@@ -1,0 +1,7 @@
+.reservation-modal .ant-divider-horizontal {
+  margin-top: 24px !important;
+  margin-bottom: 12px !important;
+}
+.reservation-modal .ant-row {
+  margin-bottom: 16px; /* Row 간 세로 간격 */
+}

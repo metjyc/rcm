@@ -1,4 +1,4 @@
-# ========== Root .gitignore ==========
+# ========== Frontend .gitignore ==========
 
 # dependencies
 /node_modules
@@ -11,11 +11,11 @@
 # production
 /build
 /dist
+.cache/
 
 # misc
 .DS_Store
 *.log
-logs/
 
 # env files
 .env
@@ -23,16 +23,6 @@ logs/
 !.env.example
 !.env.sample
 
-# database dumps
-*.sql
-*.sqlite
-*.db
-dump/
-backups/
-
 # editor / IDE
 .vscode/
 .idea/
-
-# system files
-Thumbs.db

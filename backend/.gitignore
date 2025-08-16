@@ -1,21 +1,13 @@
-# ========== Root .gitignore ==========
+# ========== Backend .gitignore ==========
 
 # dependencies
 /node_modules
-/.pnp
-.pnp.js
-
-# testing
-/coverage
-
-# production
-/build
 /dist
+/build
 
-# misc
-.DS_Store
-*.log
+# logs
 logs/
+*.log
 
 # env files
 .env
@@ -30,9 +22,9 @@ logs/
 dump/
 backups/
 
+# misc
+.DS_Store
+
 # editor / IDE
 .vscode/
 .idea/
-
-# system files
-Thumbs.db
