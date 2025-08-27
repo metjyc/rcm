@@ -1,0 +1,5 @@
+# 기본적으로 텍스트 파일은 LF로 강제
+* text=auto eol=lf
+
+# 윈도우 전용 배치 파일 같은 건 CRLF 유지
+*.bat text eol=crlf

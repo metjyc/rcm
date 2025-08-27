@@ -19,8 +19,8 @@ export default function ReservationFormModal({
   onOk,
   onDelete,
 }) {
-  const [form] = Form.useForm();
-  const [allRes, setAllRes] = useState([]);
+  const [form] = Form.useForm(); // antd 폼 인스턴스
+  const [allRes, setAllRes] = useState([]); // 모달이 열릴 때 예약 목록을 불러와서 겹침 확인에 사용
 
   // Divider 공통 스타일
   const dividerStyle = { margin: "16px 0 8px", fontWeight: "bold" };
@@ -96,7 +96,7 @@ export default function ReservationFormModal({
       return message.error("해당 차량에 겹치는 예약이 이미 존재합니다.");
     }
 
-    // payload 구성
+    // payload 구성값
     const payload = {
       vin,
       customer_id,
