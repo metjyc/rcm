@@ -31,6 +31,7 @@ export default function ReservationFormModal({
 
     // 초기값 세팅
     if (formMode === "edit") {
+      // 수정 모드: DB에 있는 예약 값을 폼에 꽂아넣음
       form.setFieldsValue({
         reservation_id: initial.reservation_id,
         vin: initial.vin,
@@ -47,6 +48,7 @@ export default function ReservationFormModal({
         payment_method: initial.payment_method,
       });
     } else {
+      // 생성 모드: 선택된 차량/날짜 정도만 기본값으로
       form.setFieldsValue({
         vin: initial.vin,
         vehicle_name: initial.name,
@@ -74,6 +76,7 @@ export default function ReservationFormModal({
 
   const handleFinish = async (values) => {
     const { vin, start, end, customer_id } = values;
+    // 기본 검증
     if (!start || !end) {
       return message.error("시작/종료일시를 모두 선택하세요");
     }
@@ -81,22 +84,24 @@ export default function ReservationFormModal({
       return message.error("종료일시는 시작일시 이후여야 합니다");
     }
 
-    // 충돌 검사
+    // 충돌 검사 (같은 차량이고 시간이 겹치는 예약이 있는지)
     const ns = start.valueOf(),
       ne = end.valueOf();
     const conflict = allRes.some((r) => {
       if (r.vin !== vin) return false;
+      // 수정일 경우 자기 자신은 제외
       if (formMode === "edit" && r.reservation_id === initial.reservation_id)
         return false;
       const s = dayjs(r.start_datetime).valueOf();
       const e = dayjs(r.end_datetime).valueOf();
+      // !(e <= ns || s >= ne) == 겹침
       return !(e <= ns || s >= ne);
     });
     if (conflict) {
       return message.error("해당 차량에 겹치는 예약이 이미 존재합니다.");
     }
 
-    // payload 구성값
+    // 서버로 보낼 payload 구성값
     const payload = {
       vin,
       customer_id,
@@ -110,12 +115,13 @@ export default function ReservationFormModal({
       payment_method: values.payment_method,
     };
 
+    // 부모의 onOK 호출(성공/실패 메세지 처리)
     try {
       await onOk(payload);
       message.success(
         formMode === "create" ? "예약 생성 완료" : "예약 수정 완료"
       );
-      onCancel();
+      onCancel(); // 자동 닫기
     } catch {
       message.error(
         formMode === "create"
