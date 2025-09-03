@@ -21,6 +21,8 @@ export default function ReservationFormModal({
 }) {
   const [form] = Form.useForm(); // antd 폼 인스턴스
   const [allRes, setAllRes] = useState([]); // 모달이 열릴 때 예약 목록을 불러와서 겹침 확인에 사용
+  const overlaps = (aStart, aEnd, bStart, bEnd) =>
+    aEnd > bStart && aStart < bEnd;
 
   // Divider 공통 스타일
   const dividerStyle = { margin: "16px 0 8px", fontWeight: "bold" };
@@ -85,18 +87,26 @@ export default function ReservationFormModal({
     }
 
     // 충돌 검사 (같은 차량이고 시간이 겹치는 예약이 있는지)
-    const ns = start.valueOf(),
-      ne = end.valueOf();
+    // 충돌 검사
+    const ns = start.valueOf();
+    const ne = end.valueOf();
+
     const conflict = allRes.some((r) => {
+      // 같은 차량만 비교
       if (r.vin !== vin) return false;
-      // 수정일 경우 자기 자신은 제외
+
+      // 수정 중이면 자기 자신은 제외
       if (formMode === "edit" && r.reservation_id === initial.reservation_id)
         return false;
+
       const s = dayjs(r.start_datetime).valueOf();
       const e = dayjs(r.end_datetime).valueOf();
-      // !(e <= ns || s >= ne) == 겹침
-      return !(e <= ns || s >= ne);
+
+      // [s,e) 와 [ns,ne) 겹침 여부
+      // 이 코드는 현재 차량 준비 시간을 생각하지 못함. 추후 차량 준비 시간까지 포함해서 비교하는 코드를 추가하면 좋을듯.
+      return overlaps(s, e, ns, ne);
     });
+
     if (conflict) {
       return message.error("해당 차량에 겹치는 예약이 이미 존재합니다.");
     }
