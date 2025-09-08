@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+// 📁 src/pages/CalendarPage.js
+import React, { useEffect, useMemo, useState, useCallback } from "react";
 import dayjs from "dayjs";
 import "dayjs/locale/ko";
 
@@ -13,6 +14,7 @@ import {
 import ReservationBar from "../components/ReservationBar";
 import ReservationFormModal from "../components/ReservationFormModal";
 import "./Calendar.css";
+
 dayjs.locale("ko");
 
 const DAYS_TO_SHOW = 30;
@@ -20,26 +22,35 @@ const CELL_WIDTH_PX = 80;
 
 export default function CalendarPage() {
   const today = dayjs();
+
+  // 데이터
   const [vehicles, setVehicles] = useState([]);
   const [schedules, setSchedules] = useState([]);
 
   // 모달 상태
   const [modalOpen, setModalOpen] = useState(false);
-  const [formMode, setFormMode] = useState("create");
+  const [formMode, setFormMode] = useState("create"); // 'create' | 'edit'
   const [initialData, setInitial] = useState({});
 
+  // 날짜 리스트
+  const dateList = useMemo(
+    () =>
+      Array.from({ length: DAYS_TO_SHOW }, (_, i) =>
+        today.add(i, "day").format("YYYY-MM-DD")
+      ),
+    [today]
+  );
+
   // 데이터 로드
-  const loadData = async () => {
-    setVehicles(await fetchVehicles());
-    setSchedules(await fetchReservations());
-  };
-  useEffect(() => {
-    loadData();
+  const loadData = useCallback(async () => {
+    const [v, r] = await Promise.all([fetchVehicles(), fetchReservations()]);
+    setVehicles(v || []);
+    setSchedules(r || []);
   }, []);
 
-  const dateList = Array.from({ length: DAYS_TO_SHOW }, (_, i) =>
-    today.add(i, "day").format("YYYY-MM-DD")
-  );
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   // 새 예약 모달 열기
   const openCreate = (vin, name, plate, date) => {
@@ -64,10 +75,11 @@ export default function CalendarPage() {
     setModalOpen(true);
   };
 
-  // 생성/수정 콜백
+  // 생성/수정 콜백 (ReservationFormModal -> onOk)
   const handleOk = async (payload) => {
     if (formMode === "create") {
-      await createReservation({ company_id: 1, ...payload });
+      // 프론트에서 company_id 안 보냄 (백엔드에서 req.user.company_id 사용)
+      await createReservation(payload);
     } else {
       await updateReservation(initialData.reservation_id, payload);
     }
@@ -75,7 +87,7 @@ export default function CalendarPage() {
     await loadData();
   };
 
-  // 삭제 콜백
+  // 삭제 콜백 (ReservationFormModal -> onDelete)
   const handleDelete = async (id) => {
     await deleteReservation(id);
     setModalOpen(false);
@@ -108,6 +120,7 @@ export default function CalendarPage() {
             })}
           </tr>
         </thead>
+
         <tbody>
           {vehicles.map((v) => (
             <tr key={v.vin}>
@@ -115,7 +128,6 @@ export default function CalendarPage() {
               <td style={{ width: 120 }}>{v.plate}</td>
 
               {dateList.map((date) => {
-                // 이 셀에 보이는 r 들만 필터
                 const filtered = schedules.filter(
                   (r) =>
                     r.vin === v.vin &&
@@ -127,7 +139,7 @@ export default function CalendarPage() {
 
                 return (
                   <td
-                    key={date}
+                    key={`${v.vin}-${date}`}
                     className={`calendar-cell ${
                       date === today.format("YYYY-MM-DD") ? "today-border" : ""
                     }`}
@@ -136,7 +148,6 @@ export default function CalendarPage() {
                     }
                   >
                     {filtered.map((r) => {
-                      // 이 예약이 보이는 첫 셀 계산
                       const rStart = dayjs(r.start_datetime);
                       const firstDate = rStart.isBefore(
                         dayjs(dateList[0]).startOf("day")
